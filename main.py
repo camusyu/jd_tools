@@ -160,7 +160,7 @@ class JD:
         content = cookie.cookie2str(ignore_discard=True, ignore_expires=True)
         if user.cookie != content:
             user.cookie = content
-            user.time = time.time()
+            # user.time = time.time()
         user.valid = True
         user.save()
         print('{nick}的cookie保存成功'.format(nick=self.nick))
@@ -178,7 +178,7 @@ class JD:
             print('{nick}登陆成功'.format(nick=self.nick))
             # self.save_cookie()
             user = Account.select().where(Account.name == self.name).first()
-            print('cookie信息已使用{}天{}时{}分'.format(*Datetime2readable(user.time, time.time())))
+            # print('cookie信息已使用{}天{}时{}分'.format(*Datetime2readable(user.time, time.time())))
             print('京豆数量:{}'.format(self.beans))
             return True
         else:
@@ -207,7 +207,7 @@ class JD:
 
     @classmethod
     def auto_sign(cls):
-        users = Account.select().where(Account.valid == True)
+        users = Account.select()# .where(Account.valid == True)
         task = []
         msg = ''
         for user in users:
@@ -219,14 +219,14 @@ class JD:
 
     @classmethod
     def clean_account(cls):
-        users = Account.select().where(Account.valid == True)
+        users = Account.select() #.where(Account.valid == True)
         for user in users:
             jd = cls(user.nick)
             jd.remove_follow()
 
     def select_cookie(self):
         self.set_new_env()
-        users = Account.select().where(Account.valid == True)
+        users = Account.select()# .where(Account.valid == True)
         for i, j in enumerate(users, start=1):
             print(i, ':', j.nick)
         x = input('请输入序号选择加载的cookie，输入其他结束:')
@@ -245,7 +245,7 @@ class JD:
     def check_fail_cookie(cls):
         for i in Account.select():
             cls(i.nick)
-        users = Account.select().where(Account.valid == False, Account.apply == True)
+        users = Account.select()# .where(Account.valid == False)#, Account.apply == True)
         if users:
             msg = '、'.join([user.nick for user in users])
             Smail('登陆失效提醒', '{users}已失效，请尽快重新登陆！'.format(users=msg))
@@ -300,7 +300,7 @@ class JD:
 
     @classmethod
     def add_shops(cls):
-        users = Account.select().where(Account.valid == True)
+        users = Account.select()# .where(Account.valid == True)
         user = users[0]
         jd = cls(user.nick)
         jd.get('https://bean.jd.com/myJingBean/list')

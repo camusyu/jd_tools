@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>京东签到助手</title>
+</head>
+<body>
+<button onclick="getqr()">获取二维码</button>
+<br>
+<input id="token" value="" type="hidden">
+二维码网址:<a id="url"></a>
+<br>
+<br>
+<div id="qrcode" display="text-align:center"></div>
+<p id="tishi"></p>
+<div id="yanzheng"></div>
+<div>
+    <h4>使用说明</h4>
+    <ul>本网站可以在每天0点帮已登陆的用户签到，平均得京豆30-40个</ul>
+    <ul>由于京东自身的限制，扫码登陆后帐号信息最多保存1天，所以为了能保证自己签到成功，尽量每天睡前登陆一次</ul>
+    <h4>如何登陆</h4>
+    <ul>1.点击上面的“获取二维码”按钮</ul>
+    <ul>2.将二维码页面截图</ul>
+    <ul>3.打开京东app，扫描刚才的二维码，允许登陆</ul>
+    <ul>4.返回刚才的页面，看到二维码下面的状态信息变成“登录成功”，则为OK</ul>
+    <ul style="color: red">登陆成功之前一定不可以关掉页面，否则会登陆失败</ul>
+    <ul style="color: blue">随时可以点击下面的查询状态按钮查看自己的帐号是否失效</ul>
+</div>
+<div>
+    <button onclick="get_user_state()">查询状态</button>
+    <table id="state" border="1">
+
+    </table>
+</div>
+<textarea id="cookies"></textarea>
+<button onclick="upload()">上传</button>
+</body>
+<script src="http://www.flycold.cn:9009/out/axios.min.js"></script>
+<script src="http://www.flycold.cn:9009/out/qrcanvas.min.js"></script>
+<script src="http://www.flycold.cn:9009/out/jquery-3.3.1.min.js"></script>
+
+
+<script>
+    var lunxun;
+
+    function upload() {
+        let cookie_json;
+        try {
+            cookie_json = JSON.parse(document.getElementById('cookies').value);
+        }catch (e) {
+            alert('请输入正确的json格式cookie!');
+            return;
+        }
+        let s = '';
+        for(let i of cookie_json){s += i.name+"="+i.value + ";"}
+        let cookie = s.substr(0,s.length-1);
+        axios.post('/cookie',{
+            cookie:cookie
+        }).then(function (response) {
+            alert(response.data.msg)
+        });
+    }
+
+    function get_user_state() {
+        let table = document.getElementById('state');
+        table.innerHTML = '<tr>\n' +
+            '            <th>昵称</th>\n' +
+            '            <th>登陆时间</th>\n' +
+            '            <th>当前状态</th>\n' +
+            '        </tr>';
+        axios.get('/api/state')
+            .then(function (response) {
+                let rsp = response.data;
+                for(let user of rsp.data){
+                    let tr = document.createElement('tr');
+                    let nick = document.createElement('td');
+                    let state = document.createElement('td');
+                    let time = document.createElement('td');
+                    nick.innerText = user.nick;
+                    state.innerText = user.login;
+                    if(user.login){
+                        state.style = 'color:green'
+                    }else{
+                        state.style = 'color:red'
+                    }
+                    time.innerText = user.time;
+                    tr.appendChild(nick);
+                    tr.appendChild(time);
+                    tr.appendChild(state);
+                    table.appendChild(tr);
+                }
+
+            })
+    }
+
+    function getqrstate() {
+        let token = document.getElementById('token').value;
+        let url = "https://qr.m.jd.com/check?appid=133&token=" + token;
+        if (token === "") {
+            clearInterval(lunxun);
+        } else {
+            axios.get('/api/qrcode')
+                .then(function (response) {
+                    val = response.data;
+                    if (val.code === 203) {
+                        clearInterval(lunxun);
+                    }
+                    else if (val.code === 200) {
+                        clearInterval(lunxun);
+                    }
+                    else if (val.code === 208) {
+                        clearInterval(lunxun);
+                        alert(val.msg);
+                        let a = document.createElement('a');
+                        a.href = val.url;
+                        a.setAttribute('target', "view_window");
+                        a.innerText = '点此跳转进行验证，验证成功后请重新获取二维码登陆';
+                        document.getElementById('yanzheng').appendChild(a);
+                    }
+                    document.getElementById('tishi').innerText = val.msg;
+                })
+                .catch(function (error) {
+                    clearInterval(lunxun);
+                    alert(error.response.data.msg);
+                })
+        }
+    }
+
+    function getqr() {
+        axios.post('/api/qrcode')
+            .then(function (response) {
+                document.getElementById('yanzheng').innerHTML = '';
+                let req = response.data;
+                console.log(req);
+                document.getElementById('token').value = req.token;
+                document.getElementById('url').innerText = req.url;
+                document.getElementById('url').href = req.url;
+                document.getElementById('url').setAttribute('target', "view_window");
+                document.getElementById('qrcode').innerHTML = '';
+                let canvas = document.createElement("img");
+                canvas.setAttribute("src","http://flycold.cn/create_qrcode/?string="+req.url);
+                
+/*const canvas = qrcanvas.qrcanvas({
+                    data: req.url
+                });*/
+                document.getElementById('qrcode').appendChild(canvas);
+                lunxun = setInterval(getqrstate, 2000);
+            })
+            .catch(function (error) {
+                alert('出错，请联系作者')
+            })
+    }
+</script>
+</html>

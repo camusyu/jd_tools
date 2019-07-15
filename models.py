@@ -2,7 +2,8 @@
 from peewee import *
 import time
 
-db = MySQLDatabase('jd', user='root', host='115.159.110.11', password='771251091')
+# db = MySQLDatabase('jd', user='root', host='115.159.110.11', password='771251091')
+db = SqliteDatabase('jd.db')
 
 
 class ShopSign(Model):
@@ -13,12 +14,9 @@ class ShopSign(Model):
         database = db
 
 class Account(Model):
-    name = CharField()
+    name = CharField(default="")
     nick = CharField()
-    time = TimestampField(default=time.time)
-    valid = BooleanField(default=True)
-    apply = BooleanField(default=False)
-    cookie = TextField()
+    cookie = TextField(default="")
     cookie_mobile = TextField(default="")
 
     class Meta:

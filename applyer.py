@@ -157,6 +157,7 @@ class Apply:
             self.follow_shop(shopid)
         # 关注商品
         self.get(self.follow_good_url.format(skuid=good.skuid))
+        time.sleep(0.5)
 
         # 申请单件商品
         while True:
@@ -326,7 +327,7 @@ if __name__ == '__main__':
             app = Apply(JD())
             app.get_rich_good()
     else:
-        users = Account.select().where(Account.valid == True)
+        users = Account.select()# .where(Account.valid == True)
         tasks = []
         for user in users:
             t = threading.Thread(target=do_task, args=(user.nick,))
