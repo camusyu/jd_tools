@@ -168,6 +168,7 @@ class JD:
 
     def valid_account(self):
         html = self.get(self.login_server_url.format(time=Gtime())).text
+        #print(html)
         html = re.search(r'\{[\s\S]*\}', html).group(0)
         req = json.loads(html).get('Identity')
         if req.get('IsAuthenticated'):
