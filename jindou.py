@@ -29,7 +29,7 @@ def shouhuo(cookie_dict):
 
     response = requests.post('https://ms.jr.jd.com/gw/generic/uc/h5/m/harvest?_={}'.format(Gtime()),
                                  headers=headers, data=data, cookies=cookie_dict)
-    # print(response.json())
+   # print(response.json())
 
 
 def sell_fruit(cookie_dict):

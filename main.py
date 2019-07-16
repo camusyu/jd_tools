@@ -301,7 +301,7 @@ class JD:
     @classmethod
     def add_shops(cls):
         users = Account.select()# .where(Account.valid == True)
-        user = users[0]
+        user = users.first()
         jd = cls(user.nick)
         jd.get('https://bean.jd.com/myJingBean/list')
         print("增加{}个商铺".format(json_to_object(jd.get('https://bean.jd.com/myJingBean/getPopSign').text)))
