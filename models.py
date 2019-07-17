@@ -1,9 +1,10 @@
 # coding=utf-8
 from peewee import *
-import time
+import os
 
+path = os.path.dirname(__file__)
 # db = MySQLDatabase('jd', user='root', host='115.159.110.11', password='771251091')
-db = SqliteDatabase('jd.db')
+db = SqliteDatabase(os.path.join(path, 'jd.db'))
 
 
 class ShopSign(Model):
@@ -12,6 +13,7 @@ class ShopSign(Model):
 
     class Meta:
         database = db
+
 
 class Account(Model):
     name = CharField(default="")
