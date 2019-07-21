@@ -105,7 +105,7 @@ def help_othres(cookie_dict):
         response = requests.post('https://ms.jr.jd.com/gw/generic/uc/h5/m/login?_='.format(Gtime()), headers=headers,
                                  cookies=cookie_dict, data=data)
         time.sleep(1)
-        print(response.json())
+        #print(response.json())
 
 
 

@@ -6,15 +6,6 @@
     <title>京东签到助手</title>
 </head>
 <body>
-<button onclick="getqr()">获取二维码</button>
-<br>
-<input id="token" value="" type="hidden">
-二维码网址:<a id="url"></a>
-<br>
-<br>
-<div id="qrcode" display="text-align:center"></div>
-<p id="tishi"></p>
-<div id="yanzheng"></div>
 <div>
     <h4>使用说明</h4>
     <ul>本网站可以在每天0点帮已登陆的用户签到，平均得京豆30-40个</ul>
@@ -36,9 +27,7 @@
 <textarea id="cookies"></textarea>
 <button onclick="upload()">上传</button>
 </body>
-<script src="http://www.flycold.cn:9009/out/axios.min.js"></script>
-<script src="http://www.flycold.cn:9009/out/qrcanvas.min.js"></script>
-<script src="http://www.flycold.cn:9009/out/jquery-3.3.1.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 
 <script>
@@ -55,13 +44,15 @@
         let s = '';
         for(let i of cookie_json){s += i.name+"="+i.value + ";"}
         let cookie = s.substr(0,s.length-1);
-        axios.post('/cookie',{
+        axios.post('./cookie',{
             cookie:cookie
         }).then(function (response) {
-            alert(response.data.msg)
-        });
+            alert(response.data.msg);
+        }).catch(function (error) {
+            alert(error.response.data.msg);
+	});
     }
-
+/**
     function get_user_state() {
         let table = document.getElementById('state');
         table.innerHTML = '<tr>\n' +
@@ -92,64 +83,8 @@
                 }
 
             })
-    }
-
-    function getqrstate() {
-        let token = document.getElementById('token').value;
-        let url = "https://qr.m.jd.com/check?appid=133&token=" + token;
-        if (token === "") {
-            clearInterval(lunxun);
-        } else {
-            axios.get('/api/qrcode')
-                .then(function (response) {
-                    val = response.data;
-                    if (val.code === 203) {
-                        clearInterval(lunxun);
-                    }
-                    else if (val.code === 200) {
-                        clearInterval(lunxun);
-                    }
-                    else if (val.code === 208) {
-                        clearInterval(lunxun);
-                        alert(val.msg);
-                        let a = document.createElement('a');
-                        a.href = val.url;
-                        a.setAttribute('target', "view_window");
-                        a.innerText = '点此跳转进行验证，验证成功后请重新获取二维码登陆';
-                        document.getElementById('yanzheng').appendChild(a);
-                    }
-                    document.getElementById('tishi').innerText = val.msg;
-                })
-                .catch(function (error) {
-                    clearInterval(lunxun);
-                    alert(error.response.data.msg);
-                })
         }
     }
-
-    function getqr() {
-        axios.post('/api/qrcode')
-            .then(function (response) {
-                document.getElementById('yanzheng').innerHTML = '';
-                let req = response.data;
-                console.log(req);
-                document.getElementById('token').value = req.token;
-                document.getElementById('url').innerText = req.url;
-                document.getElementById('url').href = req.url;
-                document.getElementById('url').setAttribute('target', "view_window");
-                document.getElementById('qrcode').innerHTML = '';
-                let canvas = document.createElement("img");
-                canvas.setAttribute("src","http://flycold.cn/create_qrcode/?string="+req.url);
-                
-/*const canvas = qrcanvas.qrcanvas({
-                    data: req.url
-                });*/
-                document.getElementById('qrcode').appendChild(canvas);
-                lunxun = setInterval(getqrstate, 2000);
-            })
-            .catch(function (error) {
-                alert('出错，请联系作者')
-            })
-    }
+    **/
 </script>
 </html>
