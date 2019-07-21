@@ -2,3 +2,4 @@ requests
 pymysql
 peewee
 beautifulsoup4
+retrying

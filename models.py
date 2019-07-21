@@ -3,7 +3,7 @@ from peewee import *
 import os
 
 path = os.path.dirname(__file__)
-# db = MySQLDatabase('jd', user='root', host='115.159.110.11', password='771251091')
+# db = MySQLDatabase('jd', user='', host='', password='')
 db = SqliteDatabase(os.path.join(path, 'jd.db'))
 
 
