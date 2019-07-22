@@ -3,7 +3,7 @@
 
 from jd_request import *
 from domain import Good, Jd
-from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED, FIRST_COMPLETED
+import os
 import json
 from threading import Thread
 
@@ -75,7 +75,8 @@ def do_applys(goods, cookie_dict, opt):
 
 
 if __name__ == "__main__":
-    with open('filter.json') as f:
+    path = os.path.dirname(__file__)
+    with open(os.path.join(path, 'filter.json')) as f:
         filters = json.load(f)
     users = []
     users.append(Jd('sqlness'))
