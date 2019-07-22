@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # coding=utf-8
 
 from jd_request import *
@@ -68,23 +69,21 @@ def do_applys(goods, cookie_dict, opt):
     goods = [good for good in list(noapply) if filter_goods(good, opt)]
     for good in goods:
         follow_shop(good.shopid, cookie_dict)
-        apply_good(good.cid, cookie_dict)
+        rsp = apply_good(good.cid, cookie_dict)
+        print('{name}¥:{money} {status}'.format(name=good.name,money=good.money,status=rsp['message']))
         time.sleep(5.2)
 
 
 if __name__ == "__main__":
     with open('filter.json') as f:
         filters = json.load(f)
-
-
     users = []
     users.append(Jd('sqlness'))
     users.append(Jd('special_wen'))
-    print(len(users))
-    executor = ThreadPoolExecutor(max_workers=len(users))
+    # print(len(users))
+    # executor = ThreadPoolExecutor(max_workers=len(users))
     for name, cids in name2cids.items():
         print('开始查找{}'.format(name))
-
         opt = filters.get(name, {})
         for res in get_type_all(cids):
             goods = []
@@ -105,4 +104,4 @@ if __name__ == "__main__":
             [task.start() for task in tasks]
             [task.join() for task in tasks]
 
-    executor.close()
+    # executor.close()

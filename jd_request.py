@@ -56,7 +56,7 @@ def apply_good(id, cookie_dict):
     )
 
     response = requests.get('https://try.jd.com/migrate/apply', headers=headers, params=params, cookies=cookie_dict)
-    print(response.json())
+    return response.json()
 
 
 # 根据申请商品id获取店铺id
