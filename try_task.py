@@ -69,9 +69,10 @@ def do_applys(goods, cookie_dict, opt):
     goods = [good for good in list(noapply) if filter_goods(good, opt)]
     for good in goods:
         follow_shop(good.shopid, cookie_dict)
+        time.sleep(0.2)
         rsp = apply_good(good.cid, cookie_dict)
         print('{name}¥:{money} {status}'.format(name=good.name,money=good.money,status=rsp['message']))
-        time.sleep(5.2)
+        time.sleep(5)
 
 
 if __name__ == "__main__":
