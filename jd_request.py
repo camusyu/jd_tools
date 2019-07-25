@@ -3,6 +3,7 @@
 import requests
 import time
 import re
+import json
 from retrying import retry
 from tools import Gtime
 
@@ -28,6 +29,94 @@ def retry(times=3):
         return inner
     return outer
 '''
+
+
+def unfollow_shops(cookie_dict, shops):
+    # shops 最多50
+    headers = {
+        'Referer': 'https://wqs.jd.com/my/fav/shop_fav.shtml?ptag=7155.1.9&sceneval=2',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+    }
+
+    params = (
+        ('shopId', shops),
+        #('_', '1564068426838'),
+        ('sceneval', '2'),
+        ('g_login_type', '1'),
+        ('callback', 'jsonpCBKR'),
+        #('g_ty', 'ls'),
+    )
+
+    response = requests.get('https://wq.jd.com/fav/shop/batchunfollow', headers=headers, params=params, cookies=cookie_dict)
+    print(response.text)
+
+
+def get_follow_shop_list(cookie_dict, page=1, count=10):
+    headers = {
+        'Referer': 'https://wqs.jd.com/my/fav/shop_fav.shtml',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+    }
+
+    params = (
+        ('cp', page),
+        ('pageSize', count),
+        #('lastlogintime', '1564067507'),
+        #('_', '1564067534335'),
+        ('sceneval', '2'),
+        #('g_login_type', '1'),
+        ('callback', 'jsonpCBKJ'),
+        #('g_ty', 'ls'),
+    )
+
+    response = requests.get('https://wq.jd.com/fav/shop/QueryShopFavList', headers=headers, params=params, cookies=cookie_dict)
+    return (json.loads(response.text[14:-13])['data'])
+
+
+def get_follow_good_list(cookie_dict, page=1, count=10):
+    headers = {
+        'Referer': 'https://wqs.jd.com/my/fav/goods_fav.shtml?ptag=7155.1.8&sceneval=2',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+    }
+
+    params = (
+        ('cp', page),
+        ('pageSize', count),
+        ('category', '0'),
+        ('promote', '0'),
+        ('cutPrice', '0'),
+        ('coupon', '0'),
+        ('stock', '0'),
+        ('areaNo', '1_72_4139_0'),
+        ('_', '1564068917192'),
+        ('sceneval', '2'),
+        ('g_login_type', '1'),
+        ('callback', 'jsonpCBKK'),
+        ('g_ty', 'ls'),
+    )
+
+    response = requests.get('https://wq.jd.com/fav/comm/FavCommQueryFilter', headers=headers, params=params, cookies=cookie_dict)
+    return (json.loads(response.text[14:-13])['data'])
+
+
+def unfollow_goods(cookie_dict, goods):
+    headers = {
+        'Referer': 'https://wqs.jd.com/my/fav/goods_fav.shtml',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36',
+    }
+
+    params = (
+        ('commId',goods),
+        # '50734324835,41849305084,48699119391,35698593899,50573717298,52704152265,52850281032,15380051645,50736151849,41803999624'),
+        ('_', '1564071086620'),
+        ('sceneval', '2'),
+        ('g_login_type', '1'),
+        ('callback', 'jsonpCBKK'),
+        ('g_ty', 'ls'),
+    )
+
+    response = requests.get('https://wq.jd.com/fav/comm/FavCommBatchDel', headers=headers, params=params, cookies=cookie_dict)
+
+    print(response.text)
 
 
 @retry(stop_max_attempt_number=7, wait_fixed=200)

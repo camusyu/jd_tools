@@ -76,6 +76,15 @@ def do_applys(goods, cookie_dict, opt):
 
 
 if __name__ == "__main__":
+    '''
+    user = Jd('sqlness')
+    shops = get_follow_good_list(user.mobile, 1, 50)
+    shops = ','.join([shop['commId'] for shop in shops])
+    unfollow_goods(user.mobile, shops)
+    exit(0)
+    '''
+
+
     path = os.path.dirname(__file__)
     with open(os.path.join(path, 'filter.json')) as f:
         filters = json.load(f)
