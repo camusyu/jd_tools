@@ -33,6 +33,8 @@ def filter_goods(good, opt, time_limit=1000 * 60 ** 2 * 24):
     '''
     if good.endt - Gtime() > time_limit:
         return False
+    if good.money > 100 and good.count <31:
+        return True
     if good.money < opt.get('money', 14.9):
         return False
     if good.count > opt.get('count', 30):
